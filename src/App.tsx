@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { taskService } from "./services/taskService";
 import type { TaskPriority, TaskResponse, TaskStatus } from "./types/task";
 import TaskForm from "./components/TaskForm";
@@ -45,29 +45,26 @@ function App() {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
 
-  const loadTasks = () => {
-    setLoading(true);
-    taskService
-      .list()
-      .then((data) => {
-        setTasks(data.content);
-        setError(null);
-      })
-      .catch((err) => {
-        setError(err.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  const loadTasks = useCallback(async () => {
+    try {
+      const data = await taskService.list();
+      setTasks(data.content);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load tasks");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     loadTasks();
-  }, []);
+  }, [loadTasks]);
 
   const handleFormSuccess = () => {
     setIsCreateFormOpen(false);
     setEditingTask(null);
+    setLoading(true);
     loadTasks();
   };
 
@@ -95,6 +92,7 @@ function App() {
     setDeletingId(id);
     try {
       await taskService.remove(id);
+      setLoading(true);
       loadTasks();
     } catch (err) {
       alert(err instanceof Error ? err.message : "Failed to delete");
@@ -113,6 +111,7 @@ function App() {
         priority: task.priority,
         dueDate: task.dueDate,
       });
+      setLoading(true);
       loadTasks();
     } catch (err) {
       alert(err instanceof Error ? err.message : "Failed to update");
