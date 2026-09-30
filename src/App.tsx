@@ -36,6 +36,63 @@ function formatDate(dateString: string): string {
   });
 }
 
+function TaskSkeleton() {
+  return (
+    <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-5 animate-pulse">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 space-y-3">
+          <div className="h-5 bg-slate-700 rounded w-2/3" />
+          <div className="h-3 bg-slate-700/70 rounded w-1/2" />
+          <div className="h-2 bg-slate-700/50 rounded w-1/3" />
+          <div className="flex gap-2 pt-1">
+            <div className="h-5 bg-slate-700 rounded w-20" />
+            <div className="h-5 bg-slate-700 rounded w-16" />
+          </div>
+        </div>
+        <div className="flex gap-2 shrink-0">
+          <div className="h-7 bg-slate-700 rounded w-16" />
+          <div className="h-7 bg-slate-700 rounded w-14" />
+          <div className="h-7 bg-slate-700 rounded w-16" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EmptyState({ onCreate }: { onCreate: () => void }) {
+  return (
+    <div className="bg-slate-800/30 border border-slate-700/50 border-dashed rounded-xl p-12 text-center">
+      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-800/80 border border-slate-700 mb-5">
+        <svg
+          className="w-8 h-8 text-slate-500"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M9 11l3 3L22 4" />
+          <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+        </svg>
+      </div>
+      <h3 className="text-xl font-semibold text-slate-200 mb-2">
+        No tasks yet
+      </h3>
+      <p className="text-slate-500 text-sm mb-6 max-w-sm mx-auto">
+        Create your first task to start organizing your work and track your
+        progress.
+      </p>
+      <button
+        onClick={onCreate}
+        className="bg-blue-600 hover:bg-blue-500 px-5 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-lg shadow-blue-600/20 hover:shadow-blue-500/30 hover:-translate-y-0.5"
+      >
+        + Create your first task
+      </button>
+    </div>
+  );
+}
+
 function App() {
   const [tasks, setTasks] = useState<TaskResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -157,7 +214,11 @@ function App() {
         )}
 
         {loading && (
-          <p className="text-center text-slate-400">Loading tasks...</p>
+          <div className="space-y-3">
+            <TaskSkeleton />
+            <TaskSkeleton />
+            <TaskSkeleton />
+          </div>
         )}
 
         {error && (
@@ -168,7 +229,7 @@ function App() {
         )}
 
         {!loading && !error && tasks.length === 0 && (
-          <p className="text-center text-slate-400">No tasks found.</p>
+          <EmptyState onCreate={handleOpenCreate} />
         )}
 
         {!loading && !error && tasks.length > 0 && (
