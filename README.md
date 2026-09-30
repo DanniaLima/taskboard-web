@@ -1,75 +1,158 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# TaskBoard Web
 
-Currently, two official plugins are available:
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss)
+![Vercel](https://img.shields.io/badge/Vercel-deployed-000000?style=for-the-badge&logo=vercel)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+A modern task management web application built with **React**, **TypeScript**, **Vite** and **Tailwind CSS**. Connects to the [TaskBoard API](https://github.com/DanniaLima/taskboard-api) for full CRUD operations on tasks.
 
-## React Compiler
+## 🚀 Live Demo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Deployed on Vercel:**
 
-## Expanding the ESLint configuration
+- 🔗 **Web App:** [https://taskboard-web-rho.vercel.app](https://taskboard-web-rho.vercel.app)
+- 🔗 **Backend API:** [https://taskboard-api-6aml.onrender.com/swagger-ui/index.html](https://taskboard-api-6aml.onrender.com/swagger-ui/index.html)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+> ⚠️ The backend runs on a free-tier Render instance that sleeps after 15 minutes of inactivity. The first request may take up to 50 seconds to wake it up.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Features
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Full CRUD for tasks (create, read, update, delete)
+- Mark tasks as done with a single click
+- Inline edit — the form replaces the card in place
+- Color-coded badges for status and priority
+- Loading skeleton for a smoother UX
+- Friendly empty state with call-to-action
+- Custom favicon and branded header
+- Responsive dark interface
+- Confirmation prompt before destructive actions
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Tech Stack
 
-```
+| Category            | Technology                          |
+|---------------------|--------------------------------------|
+| Language            | TypeScript                           |
+| Library             | React 19                             |
+| Build Tool          | Vite                                 |
+| Styling             | Tailwind CSS v4                      |
+| HTTP Client         | Native `fetch`                       |
+| Type Safety         | TypeScript interfaces + strict mode  |
+| Deployment          | Vercel                               |
+| Backend Integration | REST API (Spring Boot)               |
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Architecture
 
 ```
+┌──────────────────┐      fetch       ┌──────────────────┐
+│  React Frontend  │ ───────────────► │  Spring Boot API │
+│  (Vercel)        │ ◄─────────────── │  (Render)        │
+└──────────────────┘      JSON        └──────────────────┘
+                                              │
+                                              ▼
+                                      ┌──────────────────┐
+                                      │   PostgreSQL     │
+                                      │   (Supabase)     │
+                                      └──────────────────┘
+```
+
+## Project Structure
+
+```
+taskboard-web/
+├── public/
+│   ├── favicon.svg
+│   ├── favicon.png
+│   └── logo.png
+├── src/
+│   ├── components/
+│   │   └── TaskForm.tsx
+│   ├── services/
+│   │   └── taskService.ts
+│   ├── types/
+│   │   └── task.ts
+│   ├── App.tsx
+│   ├── index.css
+│   └── main.tsx
+├── .vscode/
+│   └── settings.json
+├── index.html
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
+```
+
+## Running Locally
+
+### Prerequisites
+
+- Node.js 20+
+- npm or yarn
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/DanniaLima/taskboard-web.git
+cd taskboard-web
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure environment variables
+
+Create a `.env` file in the project root:
+
+```env
+VITE_API_URL=https://taskboard-api-6aml.onrender.com/api/tasks
+```
+
+> The app falls back to the production API URL if `VITE_API_URL` is not set — useful for quick local testing.
+
+### 4. Run the development server
+
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:5173`.
+
+## Deployment
+
+The project is deployed on **Vercel** with automatic deployments on every push to `main`.
+
+- **Framework preset:** Vite (auto-detected)
+- **Build command:** `npm run build`
+- **Output directory:** `dist`
+- **Environment variable:** `VITE_API_URL` is set in the Vercel dashboard
+
+## Roadmap
+
+- [x] List tasks with pagination support
+- [x] Create new tasks
+- [x] Edit existing tasks (inline form)
+- [x] Delete tasks with confirmation
+- [x] Mark tasks as done
+- [x] Color-coded status and priority badges
+- [x] Loading skeleton and empty state
+- [x] Custom favicon and branding
+- [x] Production deployment with CI/CD
+- [ ] Task filtering by status, priority and search
+- [ ] Sorting options (by date, priority, title)
+- [ ] Authentication (user accounts, JWT)
+- [ ] Collaboration features (teams, assignments, comments)
+
+## Author
+
+**Amisterdania (Dania) de Oliveira Lima**
+AI Developer & Data Analyst student — transitioning into Full-Stack & Backend development.
+
+- GitHub: [@DanniaLima](https://github.com/DanniaLima)
+- LinkedIn: [dannialima](https://www.linkedin.com/in/dannialima/)
+```
+
