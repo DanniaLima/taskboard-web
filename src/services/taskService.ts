@@ -1,6 +1,8 @@
 import type { TaskResponse, TaskRequest, PageResponse } from "../types/task";
 
-const API_URL = "https://taskboard-api-6aml.onrender.com/api/tasks";
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://taskboard-api-6aml.onrender.com/api/tasks";
 
 export const taskService = {
   async list(page = 0, size = 10): Promise<PageResponse<TaskResponse>> {
