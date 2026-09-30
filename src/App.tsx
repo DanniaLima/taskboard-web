@@ -183,16 +183,25 @@ function App() {
     <div className="min-h-screen bg-slate-900 text-white p-8">
       <div className="max-w-3xl mx-auto">
         <header className="flex items-center justify-between mb-10">
-          <div>
-            <h1 className="text-4xl font-bold tracking-tight">
-              TaskBoard Web <span className="text-blue-400">🚀</span>
-            </h1>
-            <p className="text-slate-500 text-sm mt-1">
-              {tasks.length} {tasks.length === 1 ? "task" : "tasks"}
-              {doneCount > 0 && (
-                <span className="ml-2 text-green-500">· {doneCount} done</span>
-              )}
-            </p>
+          <div className="flex items-center gap-4">
+            <img
+              src="/logo.png"
+              alt="TaskBoard logo"
+              className="w-14 h-14 rounded-2xl border border-slate-700/60 shadow-lg shadow-slate-950/50"
+            />
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                TaskBoard Web
+              </h1>
+              <p className="text-slate-500 text-sm mt-0.5">
+                {tasks.length} {tasks.length === 1 ? "task" : "tasks"}
+                {doneCount > 0 && (
+                  <span className="ml-2 text-green-500">
+                    · {doneCount} done
+                  </span>
+                )}
+              </p>
+            </div>
           </div>
           {!isCreateFormOpen && !editingTask && (
             <button
