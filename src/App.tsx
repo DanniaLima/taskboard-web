@@ -125,13 +125,13 @@ function App() {
     <div className="min-h-screen bg-slate-900 text-white p-8">
       <div className="max-w-3xl mx-auto">
         <header className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-bold">
+          <h1 className="text-4xl font-bold tracking-tight">
             TaskBoard Web <span className="text-blue-400">🚀</span>
           </h1>
           {!isCreateFormOpen && !editingTask && (
             <button
               onClick={handleOpenCreate}
-              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold transition"
+              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-medium transition"
             >
               + New Task
             </button>
@@ -186,7 +186,7 @@ function App() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <h2
-                        className={`text-xl font-semibold ${
+                        className={`text-xl font-semibold tracking-tight ${
                           task.status === "DONE"
                             ? "line-through text-slate-500"
                             : ""
