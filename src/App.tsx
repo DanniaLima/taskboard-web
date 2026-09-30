@@ -6,22 +6,22 @@ import TaskForm from "./components/TaskForm";
 function getStatusColor(status: TaskStatus): string {
   switch (status) {
     case "PENDING":
-      return "bg-yellow-600 text-yellow-50";
+      return "bg-yellow-500/15 text-yellow-300 border border-yellow-500/30";
     case "IN_PROGRESS":
-      return "bg-blue-600 text-blue-50";
+      return "bg-blue-500/15 text-blue-300 border border-blue-500/30";
     case "DONE":
-      return "bg-green-600 text-green-50";
+      return "bg-green-500/15 text-green-300 border border-green-500/30";
   }
 }
 
 function getPriorityColor(priority: TaskPriority): string {
   switch (priority) {
     case "LOW":
-      return "bg-slate-600 text-slate-50";
+      return "bg-slate-500/15 text-slate-300 border border-slate-500/30";
     case "MEDIUM":
-      return "bg-orange-600 text-orange-50";
+      return "bg-orange-500/15 text-orange-300 border border-orange-500/30";
     case "HIGH":
-      return "bg-red-600 text-red-50";
+      return "bg-red-500/15 text-red-300 border border-red-500/30";
   }
 }
 
@@ -121,17 +121,27 @@ function App() {
     }
   };
 
+  const doneCount = tasks.filter((t) => t.status === "DONE").length;
+
   return (
     <div className="min-h-screen bg-slate-900 text-white p-8">
       <div className="max-w-3xl mx-auto">
-        <header className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-bold tracking-tight">
-            TaskBoard Web <span className="text-blue-400">🚀</span>
-          </h1>
+        <header className="flex items-center justify-between mb-10">
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight">
+              TaskBoard Web <span className="text-blue-400">🚀</span>
+            </h1>
+            <p className="text-slate-500 text-sm mt-1">
+              {tasks.length} {tasks.length === 1 ? "task" : "tasks"}
+              {doneCount > 0 && (
+                <span className="ml-2 text-green-500">· {doneCount} done</span>
+              )}
+            </p>
+          </div>
           {!isCreateFormOpen && !editingTask && (
             <button
               onClick={handleOpenCreate}
-              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-medium transition"
+              className="bg-blue-600 hover:bg-blue-500 px-5 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-lg shadow-blue-600/20 hover:shadow-blue-500/30 hover:-translate-y-0.5"
             >
               + New Task
             </button>
@@ -181,10 +191,10 @@ function App() {
               return (
                 <div
                   key={task.id}
-                  className="bg-slate-800 border border-slate-700 rounded-lg p-4"
+                  className="group bg-slate-800/50 border border-slate-700/60 rounded-xl p-5 transition-all duration-200 hover:border-slate-600 hover:bg-slate-800 hover:shadow-lg hover:shadow-slate-950/50"
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <h2
                         className={`text-xl font-semibold tracking-tight ${
                           task.status === "DONE"
@@ -194,46 +204,51 @@ function App() {
                       >
                         {task.title}
                       </h2>
-                      <p className="text-slate-400 text-sm mt-1">
-                        {task.description}
-                      </p>
-                      <p className="text-slate-500 text-xs mt-2">
+                      {task.description && (
+                        <p className="text-slate-400 text-sm mt-1.5">
+                          {task.description}
+                        </p>
+                      )}
+                      <p className="text-slate-500 text-xs mt-2.5">
                         Due: {formatDate(task.dueDate)}
                       </p>
-                      <div className="flex gap-2 mt-3 text-xs font-semibold">
+                      <div className="flex gap-2 mt-3 text-xs font-medium">
                         <span
-                          className={`px-2 py-1 rounded ${getStatusColor(task.status)}`}
+                          className={`px-2.5 py-1 rounded-md ${getStatusColor(task.status)}`}
                         >
                           {task.status}
                         </span>
                         <span
-                          className={`px-2 py-1 rounded ${getPriorityColor(task.priority)}`}
+                          className={`px-2.5 py-1 rounded-md ${getPriorityColor(task.priority)}`}
                         >
                           {task.priority}
                         </span>
                       </div>
                     </div>
 
-                    <div className="flex gap-2 flex-wrap justify-end">
+                    <div className="flex gap-1.5 flex-wrap justify-end shrink-0">
                       {task.status !== "DONE" && (
                         <button
                           onClick={() => handleMarkAsDone(task)}
                           disabled={updatingId === task.id}
-                          className="bg-green-600 hover:bg-green-700 disabled:bg-slate-600 px-3 py-1.5 rounded text-sm font-semibold transition"
+                          className="bg-green-600/90 hover:bg-green-500 disabled:bg-slate-700 disabled:cursor-not-allowed px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 hover:-translate-y-0.5"
+                          title="Mark as done"
                         >
                           {updatingId === task.id ? "..." : "✓ Done"}
                         </button>
                       )}
                       <button
                         onClick={() => handleOpenEdit(task)}
-                        className="bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded text-sm font-semibold transition"
+                        className="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 hover:-translate-y-0.5"
+                        title="Edit task"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(task.id)}
                         disabled={deletingId === task.id}
-                        className="bg-red-600 hover:bg-red-700 disabled:bg-slate-600 px-3 py-1.5 rounded text-sm font-semibold transition"
+                        className="bg-red-600/80 hover:bg-red-500 disabled:bg-slate-700 disabled:cursor-not-allowed px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 hover:-translate-y-0.5"
+                        title="Delete task"
                       >
                         {deletingId === task.id ? "..." : "Delete"}
                       </button>
