@@ -5,18 +5,25 @@ const API_URL =
   "https://taskboard-api-6aml.onrender.com/api/tasks";
 
 export type SortOption = "createdAt,desc" | "dueDate,asc" | "priority,desc";
+export type StatusFilter = "ALL" | "PENDING" | "IN_PROGRESS" | "DONE";
 
 export const taskService = {
   async list(
     page = 0,
     size = 10,
     sort: SortOption = "createdAt,desc",
+    status: StatusFilter = "ALL",
   ): Promise<PageResponse<TaskResponse>> {
     const params = new URLSearchParams({
       page: String(page),
       size: String(size),
       sort,
     });
+
+    if (status !== "ALL") {
+      params.append("status", status);
+    }
+
     const response = await fetch(`${API_URL}?${params}`);
     if (!response.ok) {
       throw new Error("Failed to fetch tasks");

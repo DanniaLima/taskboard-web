@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { taskService, type SortOption } from "./services/taskService";
+import {
+  taskService,
+  type SortOption,
+  type StatusFilter,
+} from "./services/taskService";
 import type { TaskPriority, TaskResponse, TaskStatus } from "./types/task";
 import TaskForm from "./components/TaskForm";
 
@@ -93,6 +97,42 @@ function EmptyState({ onCreate }: { onCreate: () => void }) {
   );
 }
 
+function FilterChips({
+  active,
+  onChange,
+}: {
+  active: StatusFilter;
+  onChange: (f: StatusFilter) => void;
+}) {
+  const filters: { value: StatusFilter; label: string }[] = [
+    { value: "ALL", label: "All" },
+    { value: "PENDING", label: "Pending" },
+    { value: "IN_PROGRESS", label: "In Progress" },
+    { value: "DONE", label: "Done" },
+  ];
+
+  return (
+    <div className="flex gap-2 flex-wrap">
+      {filters.map((f) => {
+        const isActive = active === f.value;
+        return (
+          <button
+            key={f.value}
+            onClick={() => onChange(f.value)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+              isActive
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                : "bg-slate-800 border border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-600"
+            }`}
+          >
+            {f.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function App() {
   const [tasks, setTasks] = useState<TaskResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,10 +142,11 @@ function App() {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [sort, setSort] = useState<SortOption>("createdAt,desc");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
 
   const loadTasks = useCallback(async () => {
     try {
-      const data = await taskService.list(0, 10, sort);
+      const data = await taskService.list(0, 10, sort, statusFilter);
       let sorted = data.content;
 
       // Priority sort: HIGH > MEDIUM > LOW
@@ -117,7 +158,7 @@ function App() {
           LOW: 1,
         };
         sorted = [...data.content].sort(
-          (a, b) => order[b.priority] - order[a.priority]
+          (a, b) => order[b.priority] - order[a.priority],
         );
       }
 
@@ -128,7 +169,7 @@ function App() {
     } finally {
       setLoading(false);
     }
-  }, [sort]);
+  }, [sort, statusFilter]);
 
   useEffect(() => {
     loadTasks();
@@ -159,6 +200,11 @@ function App() {
   const handleSortChange = (newSort: SortOption) => {
     setLoading(true);
     setSort(newSort);
+  };
+
+  const handleStatusChange = (newFilter: StatusFilter) => {
+    setLoading(true);
+    setStatusFilter(newFilter);
   };
 
   const handleDelete = async (id: number) => {
@@ -234,24 +280,27 @@ function App() {
           )}
         </header>
 
-        {!loading && !error && tasks.length > 0 && (
-          <div className="flex items-center gap-2 mb-4">
-            <label
-              htmlFor="sort"
-              className="text-sm text-slate-400 font-medium"
-            >
-              Sort by:
-            </label>
-            <select
-              id="sort"
-              value={sort}
-              onChange={(e) => handleSortChange(e.target.value as SortOption)}
-              className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
-            >
-              <option value="createdAt,desc">Newest first</option>
-              <option value="dueDate,asc">Due date (soonest)</option>
-              <option value="priority,desc">Priority (high first)</option>
-            </select>
+        {!loading && !error && (
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <FilterChips active={statusFilter} onChange={handleStatusChange} />
+            <div className="flex items-center gap-2">
+              <label
+                htmlFor="sort"
+                className="text-xs text-slate-400 font-medium whitespace-nowrap"
+              >
+                Sort by:
+              </label>
+              <select
+                id="sort"
+                value={sort}
+                onChange={(e) => handleSortChange(e.target.value as SortOption)}
+                className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
+              >
+                <option value="createdAt,desc">Newest first</option>
+                <option value="dueDate,asc">Due date (soonest)</option>
+                <option value="priority,desc">Priority (high first)</option>
+              </select>
+            </div>
           </div>
         )}
 
