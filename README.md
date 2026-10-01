@@ -133,19 +133,28 @@ The project is deployed on **Vercel** with automatic deployments on every push t
 
 ## Roadmap
 
-- [x] List tasks with pagination support
+### ✅ v1 — Completed
+
+- [x] List tasks with pagination
 - [x] Create new tasks
 - [x] Edit existing tasks (inline form)
 - [x] Delete tasks with confirmation
 - [x] Mark tasks as done
 - [x] Color-coded status and priority badges
+- [x] Filter tasks by status (all, pending, in progress, done)
+- [x] Sort tasks by creation date and due date
 - [x] Loading skeleton and empty state
 - [x] Custom favicon and branding
 - [x] Production deployment with CI/CD
-- [ ] Task filtering by status, priority and search
-- [ ] Sorting options (by date, priority, title)
-- [ ] Authentication (user accounts, JWT)
-- [ ] Collaboration features (teams, assignments, comments)
+
+### 🔮 v2 — Planned
+
+- [ ] **Full-text search** on task titles (backend-powered)
+- [ ] **Priority sorting** (requires backend `@Query` with custom ORDER BY)
+- [ ] **Authentication** (user accounts, JWT)
+- [ ] **Collaboration** (teams, assignments, comments)
+- [ ] **Kanban board view**
+- [ ] **Multi-language support** (IT / EN / PT)
 
 ## Author
 
