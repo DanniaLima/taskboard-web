@@ -4,9 +4,20 @@ const API_URL =
   import.meta.env.VITE_API_URL ||
   "https://taskboard-api-6aml.onrender.com/api/tasks";
 
+export type SortOption = "createdAt,desc" | "dueDate,asc" | "priority,desc";
+
 export const taskService = {
-  async list(page = 0, size = 10): Promise<PageResponse<TaskResponse>> {
-    const response = await fetch(`${API_URL}?page=${page}&size=${size}`);
+  async list(
+    page = 0,
+    size = 10,
+    sort: SortOption = "createdAt,desc",
+  ): Promise<PageResponse<TaskResponse>> {
+    const params = new URLSearchParams({
+      page: String(page),
+      size: String(size),
+      sort,
+    });
+    const response = await fetch(`${API_URL}?${params}`);
     if (!response.ok) {
       throw new Error("Failed to fetch tasks");
     }

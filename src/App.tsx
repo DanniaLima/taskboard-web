@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { taskService } from "./services/taskService";
+import { taskService, type SortOption } from "./services/taskService";
 import type { TaskPriority, TaskResponse, TaskStatus } from "./types/task";
 import TaskForm from "./components/TaskForm";
 
@@ -101,18 +101,34 @@ function App() {
   const [editingTask, setEditingTask] = useState<TaskResponse | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [sort, setSort] = useState<SortOption>("createdAt,desc");
 
   const loadTasks = useCallback(async () => {
     try {
-      const data = await taskService.list();
-      setTasks(data.content);
+      const data = await taskService.list(0, 10, sort);
+      let sorted = data.content;
+
+      // Priority sort: HIGH > MEDIUM > LOW
+      // (backend sorts alphabetically, which is wrong)
+      if (sort === "priority,desc") {
+        const order: Record<TaskPriority, number> = {
+          HIGH: 3,
+          MEDIUM: 2,
+          LOW: 1,
+        };
+        sorted = [...data.content].sort(
+          (a, b) => order[b.priority] - order[a.priority]
+        );
+      }
+
+      setTasks(sorted);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load tasks");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [sort]);
 
   useEffect(() => {
     loadTasks();
@@ -138,6 +154,11 @@ function App() {
   const handleCancelForm = () => {
     setIsCreateFormOpen(false);
     setEditingTask(null);
+  };
+
+  const handleSortChange = (newSort: SortOption) => {
+    setLoading(true);
+    setSort(newSort);
   };
 
   const handleDelete = async (id: number) => {
@@ -182,7 +203,7 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-900 text-white p-8">
       <div className="max-w-3xl mx-auto">
-        <header className="flex items-center justify-between mb-10">
+        <header className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <img
               src="/logo.png"
@@ -212,6 +233,27 @@ function App() {
             </button>
           )}
         </header>
+
+        {!loading && !error && tasks.length > 0 && (
+          <div className="flex items-center gap-2 mb-4">
+            <label
+              htmlFor="sort"
+              className="text-sm text-slate-400 font-medium"
+            >
+              Sort by:
+            </label>
+            <select
+              id="sort"
+              value={sort}
+              onChange={(e) => handleSortChange(e.target.value as SortOption)}
+              className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
+            >
+              <option value="createdAt,desc">Newest first</option>
+              <option value="dueDate,asc">Due date (soonest)</option>
+              <option value="priority,desc">Priority (high first)</option>
+            </select>
+          </div>
+        )}
 
         {isCreateFormOpen && (
           <div className="mb-6">
