@@ -147,22 +147,7 @@ function App() {
   const loadTasks = useCallback(async () => {
     try {
       const data = await taskService.list(0, 10, sort, statusFilter);
-      let sorted = data.content;
-
-      // Priority sort: HIGH > MEDIUM > LOW
-      // (backend sorts alphabetically, which is wrong)
-      if (sort === "priority,desc") {
-        const order: Record<TaskPriority, number> = {
-          HIGH: 3,
-          MEDIUM: 2,
-          LOW: 1,
-        };
-        sorted = [...data.content].sort(
-          (a, b) => order[b.priority] - order[a.priority],
-        );
-      }
-
-      setTasks(sorted);
+      setTasks(data.content);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load tasks");
@@ -298,7 +283,6 @@ function App() {
               >
                 <option value="createdAt,desc">Newest first</option>
                 <option value="dueDate,asc">Due date (soonest)</option>
-                <option value="priority,desc">Priority (high first)</option>
               </select>
             </div>
           </div>

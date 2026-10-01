@@ -4,7 +4,7 @@ const API_URL =
   import.meta.env.VITE_API_URL ||
   "https://taskboard-api-6aml.onrender.com/api/tasks";
 
-export type SortOption = "createdAt,desc" | "dueDate,asc" | "priority,desc";
+export type SortOption = "createdAt,desc" | "dueDate,asc";
 export type StatusFilter = "ALL" | "PENDING" | "IN_PROGRESS" | "DONE";
 
 export const taskService = {
